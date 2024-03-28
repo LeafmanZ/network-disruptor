@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Network Metrics</title>
+    <script src="static/ajax.googleapis.com_ajax_libs_jquery_3.5.1_jquery.min.js"></script>
+    <script src="static/code.jquery.com_jquery-3.5.1.min.js"></script>
+    <!-- Bootstrap CSS -->
+    <link href="static/stackpath.bootstrapcdn.com_bootstrap_5.0.0-alpha1_css_bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* .control-panel-container {
+            margin: 20px;
+        } */
+
+        .slider-container {
+            position: relative;
+            width: 100%;
+        }
+
+        .spinner-border {
+            margin-right: 5px;
+            margin-bottom: 2px;
+        }
+
+        .spinner-grow {
+            margin-right: 5px;
+            margin-bottom: 2px;
+        }
+    </style>
+</head>
+<body>
+    <div class="control-panel-container">
+        <div class="row" style="margin-left: 20px; margin-right: 30px; margin-top: 20px;">
+            <!-- start control panel controls -->
+            <div class=" col-3" style="display: flex; justify-content: center; align-items: center; height: 100%;">
+                <b>Network Disruption Control Panel</b>
+            </div>
+            <div class=" col-3"><button type="button" class="btn btn-primary" id="submitBtn">Apply Settings</button></div>
+            <div class=" col-3"><button type="button" class="btn btn-info" id="activeMetricsBtn" data-bs-toggle="modal" data-bs-target="#metricsModal">Current Settings</button></div>
+            <div class=" col-3"><button type="button" class="btn btn-info" id="currentDefaultBtn" data-bs-toggle="modal" data-bs-target="#defaultModal">Default Settings</button></div>
+            <!-- end control panel controls -->
+            <!-- <div class=" col-3" style="margin-top: 25px;">IP address</div>
+            <div class=" col-9" style="margin-top: 25px;">
+                <input type="text" id="ipInput" class="form-control" placeholder="10.20.10.7/24">
+            </div> -->
+            <!-- start latency group -->
+            <div class=" col-12" style="margin-top: 25px;margin-bottom: 25px;">Base Latency</div>
+    
+        
+            <div class=" col-2"><span>0ms</span></div>
+            <div class=" col-8" style="margin-bottom: 15px;">
+                <div class="d-flex justify-content-between">
+                    
+                    <div class="slider-container">
+                        <label for="eth1-slider-base-latency" id="eth1-slider-base-latency-value" class="form-label" style="position: absolute;">0ms</label>
+                        <input type="range" class="form-range" min="0" max="1000" step="1" id="eth1-slider-base-latency" value="0" oninput="updateSliderValue(this, 'eth1-slider-base-latency-value', 'eth1-slider-latency-jitter')">
+                    </div>
+                    
+                </div>
+            </div>
+            <div class=" col-2"><span>1000ms</span></div>
+    
+            <div class=" col-12" style="margin-top: 45px; margin-bottom: 25px;">Latency Jitter</div>
+    
+            <div class=" col-2"><span>0ms</span></div>
+            <div class=" col-8" style="margin-bottom: 15px;">
+                <div class="d-flex justify-content-between">
+                    <div class="slider-container">
+                        <label for="eth1-slider-latency-jitter" id="eth1-slider-latency-jitter-value" class="form-label" style="position: absolute;">0ms</label>
+                        <input type="range" class="form-range" min="0" max="500" step="1" id="eth1-slider-latency-jitter" value="0" oninput="updateSliderValue(this, 'eth1-slider-latency-jitter-value')">
+                    </div>
+                </div>
+            </div>
+            <div class=" col-2"><span id="eth1-slider-latency-jitter-max-label">0ms</span></div>
+            <!-- end latency group -->
+            <!-- start bandwidth group -->
+            <div class=" col-12" style="margin-top: 45px; margin-bottom: 25px;">Bandwidth</div>
+    
+            <div class=" col-2"><span>0Mbps</span></div>
+            <div class=" col-8" style="margin-bottom: 15px;">
+                <div class="d-flex justify-content-between">
+                    <div class="slider-container">
+                        <label for="eth1-slider-bandwidth" id="eth1-slider-bandwidth-value" class="form-label" style="position: absolute;">0Mbps</label>
+                        <input type="range" class="form-range" min="0" max="1000" step="1" id="eth1-slider-bandwidth" value="0" oninput="updateSliderValue(this, 'eth1-slider-bandwidth-value', null, true)">
+                    </div>
+                </div>
+            </div>
+            <div class=" col-2"><span>1Gbps</span></div>
+            <!-- end bandwidth group -->
+            <!-- start Packet Loss group -->
+            <div class=" col-12" style="margin-top: 45px; margin-bottom: 25px;">Packet Loss</div>
+
+            <div class=" col-2"><span>0%</span></div>
+            <div class=" col-8" style="margin-bottom: 15px;">
+                <div class="d-flex justify-content-between">
+                    <div class="slider-container">
+                        <label for="eth1-slider-packet-loss" id="eth1-slider-packet-loss-value" class="form-label" style="position: absolute;">0%</label>
+                        <input type="range" class="form-range" min="0" max="100" step="1" id="eth1-slider-packet-loss" value="0" oninput="updateSliderValue(this, 'eth1-slider-packet-loss-value', null, false, true)">
+                    </div>
+                </div>
+            </div>
+            <div class=" col-2"><span>100%</span></div>
+            <!-- end Packet Loss group -->
+            <!-- start Packet Corruption group -->
+            <div class=" col-12" style="margin-top: 45px; margin-bottom: 25px;">Packet Corruption</div>
+
+            <div class=" col-2"><span>0%</span></div>
+            <div class=" col-8" style="margin-bottom: 15px;">
+                <div class="d-flex justify-content-between">
+                    <div class="slider-container">
+                        <label for="eth1-slider-packet-corruption" id="eth1-slider-packet-corruption-value" class="form-label" style="position: absolute;">0%</label>
+                        <input type="range" class="form-range" min="0" max="100" step="1" id="eth1-slider-packet-corruption" value="0" oninput="updateSliderValue(this, 'eth1-slider-packet-corruption-value', null, false, true)">
+                    </div>
+                </div>
+            </div>
+            <div class=" col-2"><span>100%</span></div>
+            <!-- end Packet Corruption group -->
+        </div>
+
+        <div class="modal fade" id="metricsModal" tabindex="-1" aria-labelledby="metricsModalLabel" aria-hidden="true">
+            <div class="modal-dialog ">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="metricsModalLabel">Active Metrics</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                </div>
+                <div class="modal-body">
+                  <!-- Dynamic content will be loaded here -->
+                  <div id="metricsContent"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="saveDefaultBtn">Save As Default</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+              </div>
+            </div>
+        </div>
+        <div class="modal fade" id="defaultModal" tabindex="-1" aria-labelledby="defaultModalLabel" aria-hidden="true">
+            <div class="modal-dialog ">
+              <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="defaultModalLabel">Default Settings</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                  <!-- Dynamic content will be loaded here -->
+                  <div id="defaultContent"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="useDefaultBtn">Use Default</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+              </div>
+            </div>
+        </div>
+        <div class="modal" tabindex="-1" id="networkModal" data-backdrop="static">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-body">
+                        <p>Connecting to networks...</p>
+                        <div id="eth1-status"><div class="spinner-border spinner-border-sm" role="status"></div>eth1</div>
+                        <div id="eth2-status"><div class="spinner-border spinner-border-sm" role="status"></div>eth2</div>
+                        <!-- Initially hidden message for reticulating spines -->
+                        <div id="reticulating-spines" style="display: none;">
+                            <br><br>
+                            <div class="spinner-border spinner-border-sm" role="status"></div>
+                            <p>Reticulating spines, please wait...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="static/stackpath.bootstrapcdn.com_bootstrap_5.0.0-alpha1_js_bootstrap.bundle.min.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            updateSliderValue(document.getElementById('eth1-slider-base-latency'), 'eth1-slider-base-latency-value', 'eth1-slider-latency-jitter');
+            updateSliderValue(document.getElementById('eth1-slider-latency-jitter'), 'eth1-slider-latency-jitter-value');
+            updateSliderValue(document.getElementById('eth1-slider-bandwidth'), 'eth1-slider-bandwidth-value', null, true);
+            updateSliderValue(document.getElementById('eth1-slider-packet-loss'), 'eth1-slider-packet-loss-value', null, false, true);
+            updateSliderValue(document.getElementById('eth1-slider-packet-corruption'), 'eth1-slider-packet-corruption-value', null, false, true);
+        });
+
+        function updateSliderValue(slider, outputId, jitterSliderId = null, isBandwidthSlider = false, isPacketLossSlider = false) {
+            var sliderValue = slider.value;
+            var label = document.getElementById(outputId);
+            var unit = 'ms'; // Default unit
+
+            if (isBandwidthSlider) {
+                unit = 'Mbps';
+            } else if (isPacketLossSlider) {
+                unit = '%'; // Set unit to '%' for packet loss
+            }
+
+            // Update the label text with the appropriate unit
+            label.innerText = sliderValue + unit;
+
+            updateLabelPosition(label, slider, sliderValue);
+
+            if (jitterSliderId && !isBandwidthSlider && !isPacketLossSlider) { // Ensure jitter logic is only applied to latency sliders
+                var jitterSlider = document.getElementById(jitterSliderId);
+                var jitterValueId = jitterSliderId + '-value';
+                var jitterMaxLabelId = jitterSliderId + '-max-label';
+
+                // Set the jitter slider max value to the current base latency value
+                jitterSlider.max = sliderValue;
+                document.getElementById(jitterMaxLabelId).innerText = sliderValue + 'ms';
+
+                if (parseInt(jitterSlider.value) > parseInt(sliderValue)) {
+                    jitterSlider.value = sliderValue;
+                }
+
+                var jitterLabel = document.getElementById(jitterValueId);
+                jitterLabel.innerText = jitterSlider.value + 'ms';
+                updateLabelPosition(jitterLabel, jitterSlider, jitterSlider.value);
+            }
+        }
+
+        function updateLabelPosition(label, slider, value) {
+            var sliderWidth = slider.offsetWidth;
+            var sliderMax = slider.max;
+            var sliderMin = slider.min;
+            var thumbOffset = ((value - sliderMin) / (sliderMax - sliderMin)) * (sliderWidth - 18); // 18 is an estimated thumb width
+
+            label.style.position = 'absolute';
+            label.style.left = (slider.offsetLeft + thumbOffset - 7) + 'px';
+            label.style.top = (slider.offsetTop - 20) + 'px';
+        }
+
+        function gatherMetrics() {
+            var metrics = {
+                // 'ipInput': $('#ipInput').val(),
+                'eth1-slider-base-latency': $('#eth1-slider-base-latency').val(),
+                'eth2-slider-base-latency': $('#eth2-slider-base-latency').val(),
+                'eth1-slider-latency-jitter': $('#eth1-slider-latency-jitter').val(),
+                'eth2-slider-latency-jitter': $('#eth2-slider-latency-jitter').val(),
+                'eth1-slider-bandwidth': $('#eth1-slider-bandwidth').val(),
+                'eth2-slider-bandwidth': $('#eth2-slider-bandwidth').val(),
+                'eth1-slider-packet-loss': $('#eth1-slider-packet-loss').val(),
+                'eth2-slider-packet-loss': $('#eth2-slider-packet-loss').val(),
+                'eth1-slider-packet-corruption': $('#eth1-slider-packet-corruption').val(),
+                'eth2-slider-packet-corruption': $('#eth2-slider-packet-corruption').val()
+            };
+            return metrics;
+        }
+
+        function applyDefaultMetrics() {
+            console.log("applyDefaultMetrics called"); // Check if function is called
+            $.ajax({
+                type: "GET",
+                url: "/get_default_metrics",
+                success: function(response) {
+                    console.log("Response received:", response); // Log the response
+                    for (var key in response) {
+                        console.log("sliderId received:", key)
+                        $('#' + key).val(response[key]).trigger('input');
+                    }
+                    console.log("Default metrics applied successfully");
+                },
+                error: function(err) {
+                    console.log("Error fetching default metrics:", err);
+                }
+            });
+        }
+
+        // Global variable to store metrics
+        var latestMetrics = {}
+
+        $(document).ready(function() {
+            // Function to show the network modal
+            function showNetworkModal() {
+                $('#networkModal').modal({
+                    backdrop: 'static',
+                    keyboard: false
+                });
+            }
+
+            checkNetworkStatus();
+
+            // Function to hide the network modal
+            function hideNetworkModal() {
+                $('#networkModal').modal('hide');
+            }
+
+            // Function to show the reticulating spines message
+            function showReticulatingSpines() {
+                $('#reticulating-spines').show();
+            }
+
+            // Function to hide the reticulating spines message
+            function hideReticulatingSpines() {
+                $('#reticulating-spines').hide();
+            }
+
+            // Update the reticulateSpines function
+            function reticulateSpines() {
+                showReticulatingSpines();
+                $.get('/reticulating_spines');
+            }
+
+            // Function to check network status
+            function checkNetworkStatus() {
+                $.get('/network-status', function(data) {
+                    if (data.eth1 === 'connected') {
+                        $('#eth1-status').html('<div class="spinner-grow spinner-grow-sm text-success" role="status"></div> eth1');
+                    }
+                    if (data.eth2 === 'connected') {
+                        $('#eth2-status').html('<div class="spinner-grow spinner-grow-sm text-success" role="status"></div> eth2');
+                    }
+                    if (data.eth1 === 'connected' && data.eth2 === 'connected') {
+                        reticulateSpines();
+                        hideNetworkModal();
+                    } else {
+                        hideReticulatingSpines();
+                        if (data.eth1 !== 'connected') {
+                            $('#eth1-status').html('<div class="spinner-border spinner-border-sm" role="status"></div>eth1');
+                        }
+                        if (data.eth2 !== 'connected') {
+                            $('#eth2-status').html('<div class="spinner-border spinner-border-sm" role="status"></div>eth2');
+                        }
+                        showNetworkModal();
+                    }
+                });
+            }
+
+            // Function to continue checking network status
+            function continueCheckingNetworkStatus() {
+                setInterval(checkNetworkStatus, 5000);
+            }
+
+            // Start checking network status
+            continueCheckingNetworkStatus();
+
+            $('#submitBtn').click(function() {
+                var metrics = gatherMetrics();
+                var dataToSubmit = {
+                    "activeMetrics": metrics
+                };
+                $.ajax({
+                    type: "POST",
+                    url: "/submit_metrics",
+                    contentType: "application/json",
+                    data: JSON.stringify(dataToSubmit),
+                    success: function(response) {
+                        console.log("Data submitted successfully");
+                        latestMetrics = response; // Update the global variable
+                    },
+                    error: function(err) {
+                        console.log("Error submitting data");
+                    }
+                });
+            });
+
+            $('#activeMetricsBtn').click(function() {
+                displayMetricsInModal();
+            });
+
+            $('#saveDefaultBtn').click(function() {
+                var metrics = gatherMetrics();
+                var dataToSubmit = {
+                    "defaultMetrics": metrics
+                };
+                $.ajax({
+                    type: "POST",
+                    url: "/save_default",
+                    contentType: "application/json",
+                    data: JSON.stringify(dataToSubmit),
+                    success: function(response) {
+                        console.log("Default data saved successfully");
+                    },
+                    error: function(err) {
+                        console.log("Error saving default data");
+                    }
+                });
+            });
+
+            $('#useDefaultBtn').click(function() {
+                applyDefaultMetrics();
+            });
+
+            $('#currentDefaultBtn').click(function() {
+                fetchAndDisplayDefaultMetrics();
+            });
+        });
+
+        function displayMetricsInModal() {
+            $.ajax({
+                type: "GET",
+                url: "/get_metrics_data",
+                success: function(response) {
+                    var metricsHtml = "<ul>";
+                    for (var key in response) {
+                        metricsHtml += "<li>" + key + ": " + response[key] + "</li>";
+                    }
+                    metricsHtml += "</ul>";
+
+                    $('#metricsContent').html(metricsHtml);
+                    $('#metricsModal').modal('show');
+                },
+                error: function(err) {
+                    console.log("Error fetching metrics data:", err);
+                }
+            });
+        }
+
+        function fetchAndDisplayDefaultMetrics() {
+            $.ajax({
+                type: "GET",
+                url: "/get_default_metrics",
+                success: function(response) {
+                    var metricsHtml = "<ul>";
+                    for (var key in response) {
+                        metricsHtml += "<li>" + key + ": " + response[key] + "</li>";
+                    }
+                    metricsHtml += "</ul>";
+
+                    $('#defaultContent').html(metricsHtml);
+                    $('#defaultModal').modal('show');
+                },
+                error: function(err) {
+                    console.log("Error fetching default metrics:", err);
+                }
+            });
+        }
+    </script>
+</body>
+</html>

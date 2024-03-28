@@ -1,0 +1,8 @@
+Run the following command in terminal to edit the cronjob
+    crontab -e
+
+Add these lines to the bottom of the crontab. You may need to revise the paths to where the disrupt_app folder is saved to.
+    @reboot sudo python /home/jzieleman/Desktop/disrupt_app/app.py
+    @reboot bash /home/jzieleman/Desktop/disrupt_app/launch_chromium.sh
+
+Profit!

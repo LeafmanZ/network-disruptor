@@ -75,7 +75,7 @@ def get_default_metrics():
 @app.route('/network-status')
 def network_status():
     # Run the ifconfig command and capture its output
-    result = subprocess.run(['ifconfig'], stdout=subprocess.PIPE)
+    result = subprocess.run(['sudo ifconfig'], stdout=subprocess.PIPE)
     output = result.stdout.decode('utf-8')
 
     # Function to check the connection status of a network interface
@@ -101,7 +101,7 @@ def execute_command(command):
         print(f"Error executing {command}: {e}")
 
 def check_interface_exists(interface):
-    result = subprocess.run(f"ifconfig {interface}", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    result = subprocess.run(f"sudo ifconfig {interface}", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     return result.returncode == 0
 
 def check_bridge_contains_interfaces():
@@ -141,4 +141,4 @@ def reticulating_spines():
     return {"status": "completed"}
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=False, host="0.0.0.0", port="5000")

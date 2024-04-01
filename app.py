@@ -123,8 +123,7 @@ def reticulating_spines():
             "ip link add br0 type bridge",
             "ip link set br0 up",
             "ip link set dev ens192 master br0",
-            "ip link set dev ens224 master br0",
-            "dhclient br0"
+            "ip link set dev ens224 master br0"
         ])
 
     commands.extend([

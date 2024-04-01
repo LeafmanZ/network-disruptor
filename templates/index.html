@@ -53,8 +53,8 @@
                 <div class="d-flex justify-content-between">
                     
                     <div class="slider-container">
-                        <label for="eth1-slider-base-latency" id="eth1-slider-base-latency-value" class="form-label" style="position: absolute;">0ms</label>
-                        <input type="range" class="form-range" min="0" max="1000" step="1" id="eth1-slider-base-latency" value="0" oninput="updateSliderValue(this, 'eth1-slider-base-latency-value', 'eth1-slider-latency-jitter')">
+                        <label for="ens192-slider-base-latency" id="ens192-slider-base-latency-value" class="form-label" style="position: absolute;">0ms</label>
+                        <input type="range" class="form-range" min="0" max="1000" step="1" id="ens192-slider-base-latency" value="0" oninput="updateSliderValue(this, 'ens192-slider-base-latency-value', 'ens192-slider-latency-jitter')">
                     </div>
                     
                 </div>
@@ -67,12 +67,12 @@
             <div class=" col-8" style="margin-bottom: 15px;">
                 <div class="d-flex justify-content-between">
                     <div class="slider-container">
-                        <label for="eth1-slider-latency-jitter" id="eth1-slider-latency-jitter-value" class="form-label" style="position: absolute;">0ms</label>
-                        <input type="range" class="form-range" min="0" max="500" step="1" id="eth1-slider-latency-jitter" value="0" oninput="updateSliderValue(this, 'eth1-slider-latency-jitter-value')">
+                        <label for="ens192-slider-latency-jitter" id="ens192-slider-latency-jitter-value" class="form-label" style="position: absolute;">0ms</label>
+                        <input type="range" class="form-range" min="0" max="500" step="1" id="ens192-slider-latency-jitter" value="0" oninput="updateSliderValue(this, 'ens192-slider-latency-jitter-value')">
                     </div>
                 </div>
             </div>
-            <div class=" col-2"><span id="eth1-slider-latency-jitter-max-label">0ms</span></div>
+            <div class=" col-2"><span id="ens192-slider-latency-jitter-max-label">0ms</span></div>
             <!-- end latency group -->
             <!-- start bandwidth group -->
             <div class=" col-12" style="margin-top: 45px; margin-bottom: 25px;">Bandwidth</div>
@@ -81,8 +81,8 @@
             <div class=" col-8" style="margin-bottom: 15px;">
                 <div class="d-flex justify-content-between">
                     <div class="slider-container">
-                        <label for="eth1-slider-bandwidth" id="eth1-slider-bandwidth-value" class="form-label" style="position: absolute;">0Mbps</label>
-                        <input type="range" class="form-range" min="0" max="1000" step="1" id="eth1-slider-bandwidth" value="0" oninput="updateSliderValue(this, 'eth1-slider-bandwidth-value', null, true)">
+                        <label for="ens192-slider-bandwidth" id="ens192-slider-bandwidth-value" class="form-label" style="position: absolute;">0Mbps</label>
+                        <input type="range" class="form-range" min="0" max="1000" step="1" id="ens192-slider-bandwidth" value="0" oninput="updateSliderValue(this, 'ens192-slider-bandwidth-value', null, true)">
                     </div>
                 </div>
             </div>
@@ -95,8 +95,8 @@
             <div class=" col-8" style="margin-bottom: 15px;">
                 <div class="d-flex justify-content-between">
                     <div class="slider-container">
-                        <label for="eth1-slider-packet-loss" id="eth1-slider-packet-loss-value" class="form-label" style="position: absolute;">0%</label>
-                        <input type="range" class="form-range" min="0" max="100" step="1" id="eth1-slider-packet-loss" value="0" oninput="updateSliderValue(this, 'eth1-slider-packet-loss-value', null, false, true)">
+                        <label for="ens192-slider-packet-loss" id="ens192-slider-packet-loss-value" class="form-label" style="position: absolute;">0%</label>
+                        <input type="range" class="form-range" min="0" max="100" step="1" id="ens192-slider-packet-loss" value="0" oninput="updateSliderValue(this, 'ens192-slider-packet-loss-value', null, false, true)">
                     </div>
                 </div>
             </div>
@@ -109,8 +109,8 @@
             <div class=" col-8" style="margin-bottom: 15px;">
                 <div class="d-flex justify-content-between">
                     <div class="slider-container">
-                        <label for="eth1-slider-packet-corruption" id="eth1-slider-packet-corruption-value" class="form-label" style="position: absolute;">0%</label>
-                        <input type="range" class="form-range" min="0" max="100" step="1" id="eth1-slider-packet-corruption" value="0" oninput="updateSliderValue(this, 'eth1-slider-packet-corruption-value', null, false, true)">
+                        <label for="ens192-slider-packet-corruption" id="ens192-slider-packet-corruption-value" class="form-label" style="position: absolute;">0%</label>
+                        <input type="range" class="form-range" min="0" max="100" step="1" id="ens192-slider-packet-corruption" value="0" oninput="updateSliderValue(this, 'ens192-slider-packet-corruption-value', null, false, true)">
                     </div>
                 </div>
             </div>
@@ -163,8 +163,8 @@
                 <div class="modal-content">
                     <div class="modal-body">
                         <p>Connecting to networks...</p>
-                        <div id="eth1-status"><div class="spinner-border spinner-border-sm" role="status"></div>eth1</div>
-                        <div id="eth2-status"><div class="spinner-border spinner-border-sm" role="status"></div>eth2</div>
+                        <div id="ens192-status"><div class="spinner-border spinner-border-sm" role="status"></div>ens192</div>
+                        <div id="ens224-status"><div class="spinner-border spinner-border-sm" role="status"></div>ens224</div>
                         <!-- Initially hidden message for reticulating spines -->
                         <div id="reticulating-spines" style="display: none;">
                             <br><br>
@@ -182,11 +182,11 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            updateSliderValue(document.getElementById('eth1-slider-base-latency'), 'eth1-slider-base-latency-value', 'eth1-slider-latency-jitter');
-            updateSliderValue(document.getElementById('eth1-slider-latency-jitter'), 'eth1-slider-latency-jitter-value');
-            updateSliderValue(document.getElementById('eth1-slider-bandwidth'), 'eth1-slider-bandwidth-value', null, true);
-            updateSliderValue(document.getElementById('eth1-slider-packet-loss'), 'eth1-slider-packet-loss-value', null, false, true);
-            updateSliderValue(document.getElementById('eth1-slider-packet-corruption'), 'eth1-slider-packet-corruption-value', null, false, true);
+            updateSliderValue(document.getElementById('ens192-slider-base-latency'), 'ens192-slider-base-latency-value', 'ens192-slider-latency-jitter');
+            updateSliderValue(document.getElementById('ens192-slider-latency-jitter'), 'ens192-slider-latency-jitter-value');
+            updateSliderValue(document.getElementById('ens192-slider-bandwidth'), 'ens192-slider-bandwidth-value', null, true);
+            updateSliderValue(document.getElementById('ens192-slider-packet-loss'), 'ens192-slider-packet-loss-value', null, false, true);
+            updateSliderValue(document.getElementById('ens192-slider-packet-corruption'), 'ens192-slider-packet-corruption-value', null, false, true);
         });
 
         function updateSliderValue(slider, outputId, jitterSliderId = null, isBandwidthSlider = false, isPacketLossSlider = false) {
@@ -238,16 +238,16 @@
         function gatherMetrics() {
             var metrics = {
                 // 'ipInput': $('#ipInput').val(),
-                'eth1-slider-base-latency': $('#eth1-slider-base-latency').val(),
-                'eth2-slider-base-latency': $('#eth2-slider-base-latency').val(),
-                'eth1-slider-latency-jitter': $('#eth1-slider-latency-jitter').val(),
-                'eth2-slider-latency-jitter': $('#eth2-slider-latency-jitter').val(),
-                'eth1-slider-bandwidth': $('#eth1-slider-bandwidth').val(),
-                'eth2-slider-bandwidth': $('#eth2-slider-bandwidth').val(),
-                'eth1-slider-packet-loss': $('#eth1-slider-packet-loss').val(),
-                'eth2-slider-packet-loss': $('#eth2-slider-packet-loss').val(),
-                'eth1-slider-packet-corruption': $('#eth1-slider-packet-corruption').val(),
-                'eth2-slider-packet-corruption': $('#eth2-slider-packet-corruption').val()
+                'ens192-slider-base-latency': $('#ens192-slider-base-latency').val(),
+                'ens224-slider-base-latency': $('#ens224-slider-base-latency').val(),
+                'ens192-slider-latency-jitter': $('#ens192-slider-latency-jitter').val(),
+                'ens224-slider-latency-jitter': $('#ens224-slider-latency-jitter').val(),
+                'ens192-slider-bandwidth': $('#ens192-slider-bandwidth').val(),
+                'ens224-slider-bandwidth': $('#ens224-slider-bandwidth').val(),
+                'ens192-slider-packet-loss': $('#ens192-slider-packet-loss').val(),
+                'ens224-slider-packet-loss': $('#ens224-slider-packet-loss').val(),
+                'ens192-slider-packet-corruption': $('#ens192-slider-packet-corruption').val(),
+                'ens224-slider-packet-corruption': $('#ens224-slider-packet-corruption').val()
             };
             return metrics;
         }
@@ -309,22 +309,22 @@
             // Function to check network status
             function checkNetworkStatus() {
                 $.get('/network-status', function(data) {
-                    if (data.eth1 === 'connected') {
-                        $('#eth1-status').html('<div class="spinner-grow spinner-grow-sm text-success" role="status"></div> eth1');
+                    if (data.ens192 === 'connected') {
+                        $('#ens192-status').html('<div class="spinner-grow spinner-grow-sm text-success" role="status"></div> ens192');
                     }
-                    if (data.eth2 === 'connected') {
-                        $('#eth2-status').html('<div class="spinner-grow spinner-grow-sm text-success" role="status"></div> eth2');
+                    if (data.ens224 === 'connected') {
+                        $('#ens224-status').html('<div class="spinner-grow spinner-grow-sm text-success" role="status"></div> ens224');
                     }
-                    if (data.eth1 === 'connected' && data.eth2 === 'connected') {
+                    if (data.ens192 === 'connected' && data.ens224 === 'connected') {
                         reticulateSpines();
                         hideNetworkModal();
                     } else {
                         hideReticulatingSpines();
-                        if (data.eth1 !== 'connected') {
-                            $('#eth1-status').html('<div class="spinner-border spinner-border-sm" role="status"></div>eth1');
+                        if (data.ens192 !== 'connected') {
+                            $('#ens192-status').html('<div class="spinner-border spinner-border-sm" role="status"></div>ens192');
                         }
-                        if (data.eth2 !== 'connected') {
-                            $('#eth2-status').html('<div class="spinner-border spinner-border-sm" role="status"></div>eth2');
+                        if (data.ens224 !== 'connected') {
+                            $('#ens224-status').html('<div class="spinner-border spinner-border-sm" role="status"></div>ens224');
                         }
                         showNetworkModal();
                     }

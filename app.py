@@ -22,17 +22,20 @@ def submit_metrics():
     with open('metrics_data.json', 'w') as file:
         json.dump(active_metrics, file)
 
-    ens192_reset_cmd = ["sudo", "tc", "qdisc", "del", "dev", "ens192", "root"]
-    ens192_cmd = ["sudo", "tc", "qdisc", "add", "dev", "ens192", "root", "netem", "rate", f"{active_metrics['ens192-slider-bandwidth']}mbit", "loss", f"{active_metrics['ens192-slider-packet-loss']}%", "corrupt", f"{active_metrics['ens192-slider-packet-corruption']}%", "delay", f"{active_metrics['ens192-slider-base-latency']}ms", f"{active_metrics['ens192-slider-latency-jitter']}ms", "25%"]
+    # ip_cmd = f"sudo ip addr add {active_metrics['ipInput']} dev br0"
+
+    eth1_reset_cmd = "sudo tc qdisc del dev eth1 root"
+    eth1_cmd = f"""sudo tc qdisc add dev eth1 root netem rate {active_metrics['eth1-slider-bandwidth']}mbit loss {active_metrics['eth1-slider-packet-loss']}% corrupt {active_metrics['eth1-slider-packet-corruption']}% delay {active_metrics['eth1-slider-base-latency']}ms {active_metrics['eth1-slider-latency-jitter']}ms 25%"""
     
-    ens224_reset_cmd = ["sudo", "tc", "qdisc", "del", "dev", "ens224", "root"]
-    ens224_cmd = ["sudo", "tc", "qdisc", "add", "dev", "ens224", "root", "netem", "rate", f"{active_metrics['ens224-slider-bandwidth']}mbit", "loss", f"{active_metrics['ens224-slider-packet-loss']}%", "corrupt", f"{active_metrics['ens224-slider-packet-corruption']}%", "delay", f"{active_metrics['ens224-slider-base-latency']}ms", f"{active_metrics['ens224-slider-latency-jitter']}ms", "25%"]
+    eth2_reset_cmd = "sudo tc qdisc del dev eth2 root"
+    eth2_cmd = f"""sudo tc qdisc add dev eth2 root netem rate {active_metrics['eth1-slider-bandwidth']}mbit loss {active_metrics['eth1-slider-packet-loss']}% corrupt {active_metrics['eth1-slider-packet-corruption']}% delay {active_metrics['eth1-slider-base-latency']}ms {active_metrics['eth1-slider-latency-jitter']}ms 25%"""
 
     # Running the commands
-    subprocess.run(ens192_reset_cmd, check=True)
-    subprocess.run(ens192_cmd, check=True)
-    subprocess.run(ens224_reset_cmd, check=True)
-    subprocess.run(ens224_cmd, check=True)
+    # subprocess.run(ip_cmd, shell=True)
+    subprocess.run(eth1_reset_cmd, shell=True)
+    subprocess.run(eth1_cmd, shell=True)
+    subprocess.run(eth2_reset_cmd, shell=True)
+    subprocess.run(eth2_cmd, shell=True)
 
     # Return the same data for frontend
     return jsonify(active_metrics)
@@ -72,7 +75,7 @@ def get_default_metrics():
 @app.route('/network-status')
 def network_status():
     # Run the ifconfig command and capture its output
-    result = subprocess.run(['sudo', 'ifconfig'], stdout=subprocess.PIPE)
+    result = subprocess.run(['ifconfig'], stdout=subprocess.PIPE)
     output = result.stdout.decode('utf-8')
 
     # Function to check the connection status of a network interface
@@ -83,59 +86,59 @@ def network_status():
         else:
             return "not connected"
 
-    # Check the status of ens192 and ens224
-    ens192_status = check_connection('ens192')
-    ens224_status = check_connection('ens224')
+    # Check the status of eth1 and eth2
+    eth1_status = check_connection('eth1')
+    eth2_status = check_connection('eth2')
 
     # Return the status as a JSON response
-    return jsonify({"ens192": ens192_status, "ens224": ens224_status})
+    return {"eth1": eth1_status, "eth2": eth2_status}
 
 def execute_command(command):
     try:
-        # Adjusted to directly execute without shell=True where feasible
-        subprocess.run(["sudo"] + command.split(), check=True)
-        print(f"Executed: {' '.join(command)}")
+        subprocess.run(command, check=True, shell=True)
+        print(f"Executed: {command}")
     except subprocess.CalledProcessError as e:
-        print(f"Error executing {' '.join(command)}: {e}")
+        print(f"Error executing {command}: {e}")
 
 def check_interface_exists(interface):
-    result = subprocess.run(["sudo", "ifconfig", interface], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    result = subprocess.run(f"ifconfig {interface}", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     return result.returncode == 0
 
 def check_bridge_contains_interfaces():
-    result = subprocess.run(["sudo", "brctl", "show"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    result = subprocess.run("brctl show", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     output = result.stdout.decode()
-    return 'ens192' in output and 'ens224' in output
+    return 'eth1' in output and 'eth2' in output
 
 @app.route('/reticulating_spines')
 def reticulating_spines():
     if check_bridge_contains_interfaces():
         print("skipping")
-        return jsonify({"status": "ens192 and ens224 already in bridge, skipping"})
+        return {"status": "eth1 and eth2 already in bridge, skipping"}
 
     commands = [
-        "ifconfig ens192 up",
-        "ifconfig ens224 up",
+        "sudo ifconfig eth1 up",
+        "sudo ifconfig eth2 up"
     ]
 
     if not check_interface_exists("br0"):
         commands.extend([
-            "ip link add br0 type bridge",
-            "ip link set br0 up",
-            "ip link set dev ens192 master br0",
-            "ip link set dev ens224 master br0"
+            "sudo ip link add br0 type bridge",
+            "sudo ip link set br0 up",
+            "sudo ip link set dev eth1 master br0",
+            "sudo ip link set dev eth2 master br0",
+            "sudo dhclient br0"
         ])
 
     commands.extend([
-            "brctl addif br0 ens192",
-            "brctl addif br0 ens224"
+            "sudo brctl addif br0 eth1",
+            "sudo brctl addif br0 eth2"
         ])
 
     for cmd in commands:
         execute_command(cmd)
 
     time.sleep(5)  # Simulate a delay
-    return jsonify({"status": "completed"})
+    return {"status": "completed"}
 
 if __name__ == '__main__':
-    app.run(debug=False, host="0.0.0.0", port="5000")
+    app.run(debug=True)

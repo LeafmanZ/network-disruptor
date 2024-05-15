@@ -8,8 +8,6 @@ This tool is designed to evaluate network resilience by simulating various netwo
 
 The interface of the tool is a web application developed using HTML and JavaScript for the front end, and Python Flask for the back end. The network disruption functionalities are achieved using a Linux library called “brctl”. Flask interacts with this library, allowing users to manage network settings directly through the web interface.
 
-Here's a revised version of your README section for better clarity and formatting:
-
 ## Device Setup
 
 1. **Install OS:** Install the 64-bit Raspberry Pi OS on your Raspberry Pi.
@@ -19,15 +17,23 @@ Here's a revised version of your README section for better clarity and formattin
     git clone https://github.com/LeafmanZ/network-disruptor.git
     ```
     Alternatively, download and extract the 'network-disruptor' folder containing the source code.
-4. **System Update and Upgrade:** Run the following commands in the terminal to update and upgrade your system:
+4. **Install bridge-utils:** Install the `bridge-utils` package to manage network bridges:
+    ```bash
+    sudo apt install bridge-utils
+    ```
+5. **System Update and Upgrade:** Run the following commands in the terminal to update and upgrade your system:
     ```bash
     sudo apt update && sudo apt upgrade
     ```
-5. **Install Flask:** Install Flask using pip:
+6. **Install Pip:** Before installing Flask, ensure that `pip` is installed:
+    ```bash
+    sudo apt install python3-pip
+    ```
+7. **Install Flask:** Now, install Flask using `pip`:
     ```bash
     pip install flask
     ```
-6. **Configure Startup Commands:**
+8. **Configure Startup Commands:**
     Open your cron table for editing by running:
     ```bash
     crontab -e
@@ -37,12 +43,12 @@ Here's a revised version of your README section for better clarity and formattin
     @reboot sudo python /home/<username>/Desktop/disrupt_app/app.py
     @reboot bash /home/<username>/Desktop/disrupt_app/launch_chromium.sh
     ```
-7. **Reboot Device:** Restart your Raspberry Pi to apply the changes:
+9. **Reboot Device:** Restart your Raspberry Pi to apply the changes:
     ```bash
     sudo reboot
     ```
-8. **Verify Setup:** Upon reboot, you should see the menu appear on the screen.
-9. **Connect Ethernet Adapters:** Plug in two USB-to-Ethernet adapters into your Raspberry Pi. You should then see the status checks for `eth1` and `eth2` resolve.
+10. **Verify Setup:** Upon reboot, you should see the menu appear on the screen.
+11. **Connect Ethernet Adapters:** Plug in two USB-to-Ethernet adapters into your Raspberry Pi. You should then see the status checks for `eth1` and `eth2` resolve.
 
 ## Operation
 
